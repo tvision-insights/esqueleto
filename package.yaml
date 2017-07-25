@@ -55,21 +55,26 @@ flags:
 
 default-extensions:
   - ConstraintKinds
+  - CPP
+  - DataKinds
+  - DeriveGeneric
   - EmptyDataDecls
   - FlexibleContexts
   - FlexibleInstances
-  - DeriveGeneric
+  - FunctionalDependencies
   - GADTs
   - GeneralizedNewtypeDeriving
+  - InstanceSigs
   - MultiParamTypeClasses
   - OverloadedStrings
   - QuasiQuotes
   - Rank2Types
+  - RecordWildCards
+  - ScopedTypeVariables
   - TemplateHaskell
   - TypeFamilies
-  - ScopedTypeVariables
-  - CPP
   - TypeSynonymInstances
+  - UndecidableInstances
 
 dependencies:
   - base                 >= 4.8     && < 5.0

@@ -47,7 +47,7 @@ sameElementsAs l1 l2 = null (l1 L.\\ l2)
 -- | Helper for rounding to a specific digit
 --   Prelude> map (flip roundTo 12.3456) [0..5]
 --   [12.0, 12.3, 12.35, 12.346, 12.3456, 12.3456]
-roundTo :: (Fractional a, RealFrac a1, Integral b) => b -> a1 -> a
+roundTo :: (Fractional a, RealFrac a, Integral b) => b -> a -> a
 roundTo n f =
   (fromInteger $ round $ f * (10^n)) / (10.0^^n)
 
@@ -530,7 +530,9 @@ main = do
                  return $ joinV $ avg_ (p ^. PersonAge)
           let testV :: Double
               testV = roundTo 4 $ (36 + 17 + 17) / 3
-          liftIO $ ret `shouldBe` [ Value $ Just testV ]
+              dbResult :: [Value (Maybe Double)]
+              dbResult = (fmap . fmap . fmap) (roundTo 4) ret
+          liftIO $ dbResult `shouldBe` [ Value $ Just testV ]
 
       it "works with min_" $
         run $ do

@@ -14,7 +14,7 @@
 -- | This is an internal module, anything exported by this module
 -- may change without a major version bump.  Please use only
 -- "Database.Esqueleto" if possible.
-module Database.Esqueleto.Internal.Sql
+module Database.Esqueleto.Internal.Sql.Base
   ( -- * The pretty face
     SqlQuery
   , SqlExpr
@@ -754,7 +754,7 @@ veryUnsafeCoerceSqlExprValueList EEmptyList =
 
 -- | (Internal) Execute an @esqueleto@ @SELECT@ 'SqlQuery' inside
 -- @persistent@'s 'SqlPersistT' monad.
-rawSelectSource :: ( SqlSelect a r
+rawSelectSource :: forall a r m1 m2 . ( SqlSelect a r
                    , MonadIO m1
                    , MonadIO m2 )
                  => Mode
@@ -779,7 +779,7 @@ rawSelectSource mode query =
           Just (Left err) -> liftIO $ throwIO $ PersistMarshalError err
           Nothing         -> return ()
 
-      process = sqlSelectProcessRow
+      process = sqlSelectProcessRow (Proxy :: Proxy a)
 
 
 -- | Execute an @esqueleto@ @SELECT@ query inside @persistent@'s
@@ -1164,7 +1164,8 @@ parens b = "(" <> (b <> ")")
 -- This looks very similar to @RawSql@, and it is!  However,
 -- there are some crucial differences and ultimately they're
 -- different classes.
-class SqlSelect a r | a -> r, r -> a where
+-- class SqlSelect a r | a -> r, r -> a where
+class SqlSelect a r | a -> r where
   -- | Creates the variable part of the @SELECT@ query and
   -- returns the list of 'PersistValue's that will be given to
   -- 'rawQuery'.
@@ -1174,7 +1175,7 @@ class SqlSelect a r | a -> r, r -> a where
   sqlSelectColCount :: Proxy a -> Int
 
   -- | Transform a row of the result into the data type.
-  sqlSelectProcessRow :: [PersistValue] -> Either T.Text r
+  sqlSelectProcessRow :: Proxy a -> [PersistValue] -> Either T.Text r
 
   -- | Create @INSERT INTO@ clause instead.
   sqlInsertInto :: IdentInfo -> a -> (TLB.Builder, [PersistValue])
@@ -1192,7 +1193,7 @@ instance SqlSelect (SqlExpr InsertFinal) InsertFinal where
     in ("INSERT INTO " <> table <> parens fields <> "\n", [])
   sqlSelectCols info (EInsertFinal (EInsert _ f)) = f info
   sqlSelectColCount   = const 0
-  sqlSelectProcessRow = const (Right (error msg))
+  sqlSelectProcessRow _ = const (Right (error msg))
     where
       msg = "sqlSelectProcessRow/SqlSelect/InsertionFinal: never here"
 
@@ -1201,8 +1202,15 @@ instance SqlSelect (SqlExpr InsertFinal) InsertFinal where
 instance SqlSelect () () where
   sqlSelectCols _ _ = ("1", [])
   sqlSelectColCount _ = 1
-  sqlSelectProcessRow _ = Right ()
+  sqlSelectProcessRow _ _ = Right ()
 
+
+-- data SomeOtherExpr a
+
+-- instance PersistEntity a => SqlSelect (SomeOtherExpr (Entity a)) (Entity a) where
+--   sqlSelectCols _ _ = ("1", [])
+--   sqlSelectColCount _ = 1
+--   sqlSelectProcessRow _ = Right ()
 
 -- | You may return an 'Entity' from a 'select' query.
 instance PersistEntity a => SqlSelect (SqlExpr (Entity a)) (Entity a) where
@@ -1221,7 +1229,7 @@ instance PersistEntity a => SqlSelect (SqlExpr (Entity a)) (Entity a) where
         ret = let ed = entityDef $ getEntityVal $ return expr
               in (process ed, mempty)
   sqlSelectColCount = entityColumnCount . entityDef . getEntityVal
-  sqlSelectProcessRow = parseEntityValues ed
+  sqlSelectProcessRow _ = parseEntityValues ed
     where ed = entityDef $ getEntityVal (Proxy :: Proxy (SqlExpr (Entity a)))
 
 getEntityVal :: Proxy (SqlExpr (Entity a)) -> Proxy a
@@ -1235,9 +1243,9 @@ instance PersistEntity a => SqlSelect (SqlExpr (Maybe (Entity a))) (Maybe (Entit
     where
       fromEMaybe :: Proxy (SqlExpr (Maybe e)) -> Proxy (SqlExpr e)
       fromEMaybe = const Proxy
-  sqlSelectProcessRow cols
+  sqlSelectProcessRow p cols
     | all (== PersistNull) cols = return Nothing
-    | otherwise                 = Just <$> sqlSelectProcessRow cols
+    | otherwise                 = Just <$> sqlSelectProcessRow p cols
 
 
 -- | You may return any single value (i.e. a single column) from

@@ -10,7 +10,8 @@ module Database.Esqueleto.PostgreSQL
   ) where
 
 import Database.Esqueleto.Internal.Language
-import Database.Esqueleto.Internal.Sql
+import Database.Esqueleto.Internal.Sql.Base
+import Database.Esqueleto.Internal.Sql.PostgreSQL
 
 
 -- | (@array_agg@) Concatenate input values, including @NULL@s,

@@ -9,6 +9,9 @@ build-8.0:
 ghci:
 	stack ghci
 
+ghcid:
+	ghcid -c "stack ghci esqueleto:lib --test"
+
 test:
 	stack test
 

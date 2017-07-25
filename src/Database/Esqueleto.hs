@@ -109,7 +109,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Int (Int64)
 import Database.Esqueleto.Internal.Language
-import Database.Esqueleto.Internal.Sql
+import Database.Esqueleto.Internal.Sql.Base
 import Database.Esqueleto.Internal.PersistentImport
 import qualified Database.Persist
 
