@@ -463,7 +463,7 @@ instance Esqueleto SqlQuery SqlExpr SqlBackend where
   (/.)  = unsafeSqlBinOp " / "
   (*.)  = unsafeSqlBinOp " * "
 
-  random_  = unsafeSqlValue "RAND()"
+  random_  = unsafeSqlValue "RANDOM()"
   round_   = unsafeSqlFunction "ROUND"
   ceiling_ = unsafeSqlFunction "CEILING"
   floor_   = unsafeSqlFunction "FLOOR"
@@ -1129,7 +1129,7 @@ makeOrderBy info os = first ("\nORDER BY " <>) . uncommas' $ concatMap mk os
       let fs = f info
           vals = repeat []
       in zip (map (<> orderByType t) fs) vals
-    mk EOrderRandom = [first (<> "RAND()") mempty]
+    mk EOrderRandom = [first (<> "RANDOM()") mempty]
     orderByType ASC  = " ASC"
     orderByType DESC = " DESC"
 
