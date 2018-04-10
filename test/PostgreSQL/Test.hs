@@ -9,8 +9,8 @@ module Main (main) where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO(liftIO))
-import Control.Monad.Logger (runStderrLoggingT, runNoLoggingT)
-import Control.Monad.Trans.Reader (ReaderT)
+import Control.Monad.Logger (MonadLogger, runStderrLoggingT, runNoLoggingT)
+import Control.Monad.Trans.Reader (ReaderT, withReaderT)
 import Database.Esqueleto hiding (random_)
 import Database.Esqueleto.PostgreSQL (random_)
 import Database.Persist.Postgresql (withPostgresqlConn)
@@ -24,9 +24,6 @@ import Data.Time.Clock (getCurrentTime, diffUTCTime)
 
 import Common.Test
 
-
-
-
 testPostgresqlCoalesce :: Spec
 testPostgresqlCoalesce = do
   it "works on PostgreSQL and MySQL with <2 arguments" $
@@ -36,10 +33,6 @@ testPostgresqlCoalesce = do
         from $ \p -> do
         return (coalesce [p ^. PersonAge])
       return ()
-
-
-
-
 
 nameContains :: (BaseBackend backend ~ SqlBackend,
                  BackendCompatible SqlBackend backend,
@@ -314,22 +307,27 @@ run =
 verbose :: Bool
 verbose = False
 
-migrateIt :: RunDbMonad m => SqlPersistT (R.ResourceT m) ()
+migrateIt :: RunDbMonad m
+          => SqlPersistT (R.ResourceT m) ()
 migrateIt = do
   void $ runMigrationSilent migrateAll
   cleanDB
 
 run_worker
   :: ( BackendCompatible backend SqlBackend
+     , MonadLogger m
      , RunDbMonad m
      )
-  => ReaderT backend (R.ResourceT m) a -> m a
+  => ReaderT backend (R.ResourceT m) a
+  -> m a
 run_worker act =
   withConn $ runSqlConn (migrateIt >> (withReaderT projectBackend act))
 
 -- run_worker :: RunDbMonad m => SqlPersistT (R.ResourceT m) a -> m a
 -- run_worker act = withConn $ runSqlConn (migrateIt >> act)
 
-withConn :: RunDbMonad m => (SqlBackend -> R.ResourceT m a) -> m a
+withConn :: (MonadLogger m, RunDbMonad m)
+         => (SqlBackend -> R.ResourceT m a)
+         -> m a
 withConn =
   R.runResourceT . withPostgresqlConn "host=localhost port=5432 user=esqutest password=esqutest dbname=esqutest"
