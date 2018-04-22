@@ -21,6 +21,7 @@ module Database.Esqueleto.Internal.Sql
   , SqlEntity
   , select
   , selectSource
+  , selectFirst
   , delete
   , deleteCount
   , update
@@ -877,11 +878,23 @@ selectSource query = do
 select :: ( SqlSelect a r
           , MonadIO m
           )
-       => SqlQuery a -> SqlReadT m [r]
+       => SqlQuery a
+       -> SqlReadT m [r]
 select query = do
     res <- rawSelectSource SELECT query
     conn <- R.ask
     liftIO $ with res $ flip R.runReaderT conn . runSource
+
+selectFirst :: ( SqlSelect a r
+               , MonadIO m
+               )
+            => SqlQuery a
+            -> SqlReadT m (Maybe r)
+selectFirst query = do
+  res <- select query
+  case res of
+    (x : _) -> return (Just x)
+    _ -> return Nothing
 
 -- | (Internal) Run a 'C.Source' of rows.
 runSource :: Monad m =>
