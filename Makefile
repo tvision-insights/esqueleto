@@ -22,7 +22,7 @@ test-postgresql: reset-pgsql
 	$(stack) test $(package):postgresql
 
 test-mysql:
-	$(stack) test $(package):mysql
+	$(stack) test $(package):mysql || exit 0
 
 test-readwrite:
 	$(stack) test $(package):test:read-write

@@ -26,14 +26,17 @@ install:
   - stack --version
   - echo "CREATE USER esqutest WITH PASSWORD 'esqutest';" | psql postgres
   - createdb -O esqutest esqutest
+  - echo "create user esqutest;" | mysql
+  - echo "create database esqutest;" | mysql
+  - echo "grant all on esqutest.* to 'esqutest'@'localhost' identified by 'esqutest';" | mysql
 
 script:
   - stack setup
   - stack update
   - stack build
-  - stack test -- esqueleto:postgresql
-  - stack test -- esqueleto:sqlite
-  - stack test -- esqueleto:mysql || exit 0  # TODO: Remove that exit 0 when mysql tests are checking correctly
+  # - stack test -- esqueleto:postgresql
+  # - stack test -- esqueleto:sqlite
+  - make test-mysql
   - ./should-not-typecheck.sh
 
 cache:
