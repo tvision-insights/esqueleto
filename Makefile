@@ -15,6 +15,7 @@ ghcid:
 
 test:
 	$(stack) test
+	./should-not-typecheck.sh
 
 # Intended for use in local dev
 test-postgresql: reset-pgsql

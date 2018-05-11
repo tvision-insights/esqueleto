@@ -122,21 +122,21 @@ tests:
       - Common.Test
       - Paths_esqueleto
 
-  read-write:
-    main: ReadWrite/Test.hs
-    source-dirs: test
-    ghc-options: -Wall
-    dependencies:
-      - containers
-      - deepseq
-      - esqueleto
-      - hspec
-      - persistent-postgresql
-      - persistent-template
-      - postgresql-libpq
-      - postgresql-simple
-      - should-not-typecheck
-    other-modules:
-      - Common.Test
-      - ReadWrite.ShouldNotTypeCheck
-      - Paths_esqueleto
+  # read-write:
+  #   main: ReadWrite/Test.hs
+  #   source-dirs: test
+  #   ghc-options: -Wall
+  #   dependencies:
+  #     - containers
+  #     - deepseq
+  #     - esqueleto
+  #     - hspec
+  #     - persistent-postgresql
+  #     - persistent-template
+  #     - postgresql-libpq
+  #     - postgresql-simple
+  #     - should-not-typecheck
+  #   other-modules:
+  #     - Common.Test
+  #     - ReadWrite.ShouldNotTypeCheck
+  #     - Paths_esqueleto
