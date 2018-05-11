@@ -34,8 +34,8 @@ script:
   - stack setup
   - stack update
   - stack build
-  # - stack test -- esqueleto:postgresql
-  # - stack test -- esqueleto:sqlite
+  - stack test -- esqueleto:postgresql
+  - stack test -- esqueleto:sqlite
   - make test-mysql
   - ./should-not-typecheck.sh
 
