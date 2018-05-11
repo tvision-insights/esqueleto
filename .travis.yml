@@ -16,8 +16,7 @@ addons:
   postgresql: "9.6"
 
 env:
- - GHCVER=7.10
- - GHCVER=8.0
+ - GHCVER=8.2
 
 install:
   - export STACK_YAML=stack-$GHCVER.yaml

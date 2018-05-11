@@ -2,10 +2,6 @@ resolver: lts-10.6
 
 packages:
 - '.'
-- location:
-    git: git@github.com:bitemyapp/should-not-typecheck.git
-    commit: e7321c88f90f80492cf4f9c2c83ae9ec8939b2cd
-  extra-dep: true
 
 extra-deps:
 - persistent-2.8.1
