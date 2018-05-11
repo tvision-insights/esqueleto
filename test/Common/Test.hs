@@ -1377,46 +1377,9 @@ type RunDbMonad' m = ( MonadUnliftIO m
                     , MonadThrow m
                     )
 
--- type LogIO m = ( RunDbMonad m
---                , MonadLogger m
---                )
-
--- type Run = forall a. (forall m. RunDbMonad m => SqlPersistT (R.ResourceT m) a) -> IO a
-
-
--- type Run' backend = forall a
---                   . ( forall m
---                     . (RunDbMonad m)
---                    => ReaderT backend (R.ResourceT m) a)
---                 -> IO a
-
--- type Run = forall a. (forall m. RunDbMonad m => SqlPersistT (R.ResourceT m) a) -> IO a
-
--- type RunRead = forall a. (forall m. RunDbMonad m => SqlPersistT (R.ResourceT m) a) -> IO a
-
--- type RunWrite = forall a. (forall m. RunDbMonad m => SqlPersistT (R.ResourceT m) a) -> IO a
-
 type Run = forall a . (forall m . RunDbMonad m => ReaderT SqlBackend (R.ResourceT m) a) -> IO a
 type RunRead = forall m a . ReaderT SqlReadBackend m a -> m a
 type RunWrite = forall m a . ReaderT SqlWriteBackend m a -> m a
-
--- -runRead
--- -  :: ( R.MonadUnliftIO m
--- -     , m ~ IO
--- -     , MonadIO m )
--- -  => ReaderT SqlReadBackend m a
--- -  -> m a
--- -runRead = undefined
--- -
--- -runWrite
--- -  :: ( R.MonadUnliftIO m
--- -     , m ~ IO
--- -     , MonadIO m )
--- -  => ReaderT SqlWriteBackend m a
--- -  -> m a
--- -runWrite = undefined
-
--- type RunWrite = forall a. (forall backend m. (backend ~ SqlBackend, SqlBackendCanWrite backend, RunDbMonad m) => ReaderT backend (R.ResourceT m) a) -> IO a
 
 type WithConn m a =
       RunDbMonad m
