@@ -46,4 +46,5 @@ cache:
   - $HOME/.ghc
   - $HOME/.stack
   - .stack-work/
+  - /tmp
   apt: true
