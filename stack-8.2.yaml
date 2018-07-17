@@ -2,7 +2,7 @@ resolver: lts-10.6
 
 packages:
 - '.'
-# - examples
+- examples
 
 extra-deps:
 - persistent-2.8.1
