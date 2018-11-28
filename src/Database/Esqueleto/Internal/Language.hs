@@ -837,7 +837,11 @@ data LockingKind =
     -- ^ @LOCK IN SHARE MODE@ syntax.  Supported by MySQL.
     --
     -- /Since: 2.2.7/
-
+  | ForUpdateSkipLocked
+    -- ^ @FOR UPDATE SKIP LOCKED@ syntax.  Supported by MySQL, Oracle and
+    -- PostgreSQL.
+    --
+    -- /Since: 2.6.1
 
 -- | Phantom class of data types that are treated as strings by the
 -- RDBMS.  It has no methods because it's only used to avoid type
